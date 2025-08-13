@@ -551,7 +551,7 @@ async def get_top_rated_indian_movies(start: int = 0) -> Dict[str, Any]:
     return paginated_response(top_rated_indian_movies_data, start, len(top_rated_indian_movies_data))
 
 
-if __name__ == "__main__":
+def main():
     try:
         print("Starting MCP server 'imdb_server' on 127.0.0.1:8000")
         # Use this approach to keep the server running
@@ -560,3 +560,18 @@ if __name__ == "__main__":
         print(f"Error: {e}")
         # Sleep before exiting to give time for error logs
         time.sleep(5)
+
+
+def main():
+    try:
+        print("Starting MCP server 'imdb_server' on 127.0.0.1:8000")
+        # Use this approach to keep the server running
+        mcp.run()
+    except Exception as e:
+        print(f"Error: {e}")
+        # Sleep before exiting to give time for error logs
+        time.sleep(5)
+
+
+if __name__ == "__main__":
+    main()
