@@ -82,7 +82,7 @@ cache_cleaner.start()
 
 
 # Function to make a request to the IMDb API with caching
-async def make_imdb_request(url: str, querystring: dict[str, Any]) -> Optional[Dict[str, Any]]:
+async def make_imdb_request(url: str, querystring: dict[str, Any]) -> Optional[Dict[str, Any]] | str:
     """Make a request to the IMDb API with proper error handling and caching."""
     global last_cache_cleanup
     
@@ -233,7 +233,7 @@ async def get_imdb_details(imdb_id: str) -> Dict[str, Any]:
 
 
 @mcp.tool()
-async def get_directors(imdb_id: str) -> Dict[str, Any]:
+async def get_directors(imdb_id: str) -> Dict[str, Any] | str:
     """Get the directors of a movie from IMDb.
     Args:
         imdbId: The IMDb ID of the movie to get directors for.
@@ -244,9 +244,14 @@ async def get_directors(imdb_id: str) -> Dict[str, Any]:
     directors_data = await make_imdb_request(directors_url, {})
     if not directors_data:
         return "Unable to fetch directors data for this movie or movie not found."
+
+    # If the API returns a list, wrap it in a dictionary
+    if isinstance(directors_data, list):
+        return {"directors": directors_data}
+
     return directors_data
 
-    
+
 @mcp.tool()
 async def get_cast(imdb_id: str) -> Dict[str, Any]:
     """Get the cast of a movie from IMDb.
@@ -258,7 +263,12 @@ async def get_cast(imdb_id: str) -> Dict[str, Any]:
     cast_url = f"{BASE_URL}/{imdb_id}/cast"
     cast_data = await make_imdb_request(cast_url, {})
     if not cast_data:
-        return "Unable to fetch cast data for this movie or movie not found."
+        return {"error": "Unable to fetch cast data for this movie or movie not found."}
+
+    # If the API returns a list, wrap it in a dictionary
+    if isinstance(cast_data, list):
+        return {"cast": cast_data}
+
     return cast_data
 
 
@@ -273,7 +283,12 @@ async def get_writers(imdb_id: str) -> Dict[str, Any]:
     writers_url = f"{BASE_URL}/{imdb_id}/writers"
     writers_data = await make_imdb_request(writers_url, {})
     if not writers_data:
-        return "Unable to fetch writers data for this movie or movie not found."
+        return {"error": "Unable to fetch writers data for this movie or movie not found."}
+
+    # If the API returns a list, wrap it in a dictionary
+    if isinstance(writers_data, list):
+        return {"writers": writers_data}
+
     return writers_data
 
 
@@ -288,7 +303,12 @@ async def get_types() -> Dict[str, Any]:
     types_url = f"{BASE_URL}/types"
     types_data = await make_imdb_request(types_url, {})
     if not types_data:
-        return "Unable to fetch types data."
+        return {"error": "Unable to fetch types data."}
+
+    # If the API returns a list, wrap it in a dictionary
+    if isinstance(types_data, list):
+        return {"types": types_data}
+
     return types_data
 
 @mcp.tool()
@@ -300,7 +320,12 @@ async def get_genres() -> Dict[str, Any]:
     genres_url = f"{BASE_URL}/genres"
     genres_data = await make_imdb_request(genres_url, {})
     if not genres_data:
-        return "Unable to fetch genres data."
+        return {"error": "Unable to fetch genres data."}
+
+    # If the API returns a list, wrap it in a dictionary
+    if isinstance(genres_data, list):
+        return {"genres": genres_data}
+
     return genres_data
 
 
@@ -313,7 +338,12 @@ async def get_countries() -> Dict[str, Any]:
     countries_url = f"{BASE_URL}/countries"
     countries_data = await make_imdb_request(countries_url, {})
     if not countries_data:
-        return "Unable to fetch countries data."
+        return {"error": "Unable to fetch countries data."}
+
+    # If the API returns a list, wrap it in a dictionary
+    if isinstance(countries_data, list):
+        return {"countries": countries_data}
+
     return countries_data
 
 
@@ -326,7 +356,12 @@ async def get_languages() -> Dict[str, Any]:
     languages_url = f"{BASE_URL}/languages"
     languages_data = await make_imdb_request(languages_url, {})
     if not languages_data:
-        return "Unable to fetch languages data."
+        return {"error": "Unable to fetch languages data."}
+
+    # If the API returns a list, wrap it in a dictionary
+    if isinstance(languages_data, list):
+        return {"languages": languages_data}
+
     return languages_data
 
 
@@ -412,7 +447,7 @@ async def get_most_popular_tv_shows(start: int = 0) -> Dict[str, Any]:
 # -----------------------------UPCOMING RELEASES TOOLS-----------------------------------
 
 @mcp.tool()
-async def get_upcoming_releases(country_code: str, type: str, start: int = 0) -> Dict[str, Any]:
+async def get_upcoming_releases(country_code: str, type: str, start: int = 0) -> Dict[str, Any] | str:
     """Get the upcoming releases from IMDb with pagination.
     Args:
         country_code: The country code to get the upcoming releases for.
@@ -425,11 +460,13 @@ async def get_upcoming_releases(country_code: str, type: str, start: int = 0) ->
     upcoming_releases_data = await make_imdb_request(upcoming_releases_url, {"countryCode": country_code, "type": type})
     if not upcoming_releases_data:
         return "Unable to fetch upcoming releases data."
+    if isinstance(upcoming_releases_data, str):
+        return upcoming_releases_data
     return paginated_response(upcoming_releases_data, start, len(upcoming_releases_data))
 
 
 @mcp.tool()
-async def get_available_country_codes_for_upcoming_releases() -> Dict[str, Any]:
+async def get_available_country_codes_for_upcoming_releases() -> Dict[str, Any] | str:
     """Get the available country codes for upcoming releases from IMDb.
     Returns:
         JSON object containing the available country codes for upcoming releases.
@@ -438,13 +475,18 @@ async def get_available_country_codes_for_upcoming_releases() -> Dict[str, Any]:
     available_country_codes_data = await make_imdb_request(available_country_codes_url, {})
     if not available_country_codes_data:
         return "Unable to fetch available country codes for upcoming releases data."
+
+    # If the API returns a list, wrap it in a dictionary
+    if isinstance(available_country_codes_data, list):
+        return {"country_codes": available_country_codes_data}
+
     return available_country_codes_data
 
 
 # -----------------------------INDIA SPOTLIGHT TOOLS-----------------------------------
 
 @mcp.tool()
-async def get_top_rated_malayalam_movies(start: int = 0) -> Dict[str, Any]:
+async def get_top_rated_malayalam_movies(start: int = 0) -> Dict[str, Any] | str:
     """Top 50 Malayalam movies as rated by the IMDb users.
     Args:
         start: The starting index (0-based) to retrieve movies from.
@@ -457,7 +499,10 @@ async def get_top_rated_malayalam_movies(start: int = 0) -> Dict[str, Any]:
         return "Unable to fetch top rated Malayalam movies data."
     
     # Use paginated response helper with fixed page size
-    movies = top_rated_malayalam_movies_data.get("items", [])
+    if isinstance(top_rated_malayalam_movies_data, list):
+        movies = top_rated_malayalam_movies_data
+    else:
+        movies = top_rated_malayalam_movies_data.get("items", [])
     return paginated_response(movies, start, len(movies))
 
 
