@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "iflow-mcp_imdb-mcp-server"
-version = "1.0.0"
+version = "1.0.1"
 description = "A Python server implementing Model Context Protocol (MCP) for movie and TV show information using the IMDb API service"
 readme = "README.md"
 license = {text = "MIT"}

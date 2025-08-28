@@ -25,7 +25,7 @@ mcp = FastMCP(
 )
 
 # Constants
-BASE_URL = "https://imdb236.p.rapidapi.com/imdb"
+BASE_URL = "https://imdb236.p.rapidapi.com/api/imdb"
 API_KEY = os.getenv("RAPID_API_KEY_IMDB")
 
 # Cache implementation
