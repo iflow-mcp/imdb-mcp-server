@@ -165,7 +165,7 @@ async def search_imdb(
     spoken_languages: str = None,
     sort_order: str = None,
     sort_field: str = None,
-    ) -> Dict[str, Any]:
+    ) -> List | str:
     """Search for movies on IMDb. First 5 results are returned.
     Args:
         original_title: The original title of the movie to search for. Searches the whole word.
@@ -208,6 +208,9 @@ async def search_imdb(
                                                        "spokenLanguages": spoken_languages,
                                                        "sortOrder": sort_order,
                                                        "sortField": sort_field})
+    if isinstance(search_data, str):
+        return search_data
+
     if not search_data or not search_data.get("results", []):
         return "Unable to fetch search data for this movie or movie not found."
     
